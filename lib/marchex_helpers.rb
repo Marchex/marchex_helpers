@@ -1,6 +1,6 @@
 require 'yaml'
 
-module MarchexHelpers
+class MarchexHelpers
   def self.kitchen_yaml(**options)
     yaml = {}
 
@@ -87,8 +87,8 @@ module MarchexHelpers
         yaml['platforms'].push(platform)
       end
     end
-
-    yaml.to_yaml
+    # chomping beginning of yaml so that it's needed in local yamls
+    yaml.to_yaml.gsub(/---[ \n]/, '')
   end
 end
 

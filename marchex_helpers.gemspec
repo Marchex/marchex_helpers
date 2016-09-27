@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = ""
   s.authors     = ["Jimmy Carter"]
   s.email       = 'jcarter@marchex.com'
-  s.files       = ["lib/kitchen_yaml.rb"]
+  s.files       = ["lib/marchex_helpers.rb"]
   s.homepage    =
     'https://'
   s.license       = 'Apache-2.0'
