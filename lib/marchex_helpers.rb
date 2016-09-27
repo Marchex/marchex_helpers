@@ -6,6 +6,10 @@ class MarchexHelpers
 
     platforms = {
       vagrant: {
+        'ubuntu-16.04-pristine' => {
+          box:      'opscode-ubuntu-16.04',
+          box_url:  'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-16.04_chef-provisionerless.box'
+        },
         'ubuntu-12.04-pristine' => {
           box:      'opscode-ubuntu-12.04',
           box_url:  'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box'
@@ -88,6 +92,7 @@ class MarchexHelpers
       end
     end
     # chomping beginning of yaml so that it's needed in local yamls
+    # ( CodeRange does it )
     yaml.to_yaml.gsub(/---[ \n]/, '')
   end
 end
