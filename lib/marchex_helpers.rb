@@ -93,7 +93,9 @@ class MarchexHelpers
     end
     # chomping beginning of yaml so that it's needed in local yamls
     # ( CodeRanger does it )
-    yaml.to_yaml.gsub(/---[ \n]/, '')
+    result = yaml.to_yaml.gsub(/---[ \n]/, '')
+    File.open('/tmp/MarchexHelpers.kitchen_yaml.out', 'w') {|f| f.write(result) }
+    result
   end
 end
 
