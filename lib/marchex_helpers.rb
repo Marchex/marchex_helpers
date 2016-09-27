@@ -92,7 +92,7 @@ class MarchexHelpers
       end
     end
     # chomping beginning of yaml so that it's needed in local yamls
-    # ( CodeRange does it )
+    # ( CodeRanger does it )
     yaml.to_yaml.gsub(/---[ \n]/, '')
   end
 end
