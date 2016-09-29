@@ -8,4 +8,5 @@ Gem::Specification.new do |s|
   s.email       = 'tools-team@marchex.com'
   s.files       = ['lib/marchex_helpers.rb', 'lib/kitchen.rb']
   s.license     = 'Apache-2.0'
+  s.require_paths = %w{lib}
 end
