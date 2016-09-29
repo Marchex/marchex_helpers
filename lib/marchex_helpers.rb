@@ -1,4 +1,4 @@
-require 'kitchen'
+require_relative 'kitchen'
 
 module MarchexHelpers
 
