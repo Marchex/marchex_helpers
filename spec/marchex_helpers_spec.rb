@@ -1,7 +1,8 @@
 require 'spec_helper'
 require_relative '../lib/marchex_helpers'
 require 'psych'
-describe 'MarchexHelpers::Kitchen' do
+
+describe 'MarchexHelpers' do
   before (:context) do
   end
 
@@ -45,6 +46,4 @@ describe 'MarchexHelpers::Kitchen' do
     expect( Psych.safe_load(result)['drivers']['instance_type'] ).to eq('t2.awesome')
     expect( Psych.safe_load(result)['drivers']['subnet_id'] ).to eq('subnet-awesome')
   end
-
-
 end
