@@ -27,9 +27,9 @@ describe 'MarchexHelpers' do
     expect( Psych.safe_load(result)['platforms'].count.to_i ).to eq(2)
   end
 
-  it '' do
-    result = MarchexHelpers.kitchen( driver: 'ec2', ec2_aws_ssh_key_id: 'tools-team', platforms: ['ubuntu-12.04-mchx'] )
-    expect( Psych.safe_load(result)['platforms'].count.to_i ).to eq(2)
+  it 'contains default username \'ubuntu\' for ec2 driver' do
+    result = MarchexHelpers.kitchen( driver: 'ec2' )
+    expect( Psych.safe_load(result)['transport']['username']).to eq('ubuntu')
   end
 
   it 'passes ec2 parameters correctly' do
@@ -40,10 +40,10 @@ describe 'MarchexHelpers' do
         ec2_instance_type: 't2.awesome',
         ec2_subnet_id: 'subnet-awesome'
     )
-    expect( Psych.safe_load(result)['drivers']['tags'].count.to_i ).to eq(3)
-    expect( Psych.safe_load(result)['drivers']['aws_ssh_key_id'] ).to eq('my_awesome_key')
-    expect( Psych.safe_load(result)['drivers']['region'] ).to eq('us_awesome_1')
-    expect( Psych.safe_load(result)['drivers']['instance_type'] ).to eq('t2.awesome')
-    expect( Psych.safe_load(result)['drivers']['subnet_id'] ).to eq('subnet-awesome')
+    expect( Psych.safe_load(result)['driver']['tags'].count.to_i ).to eq(3)
+    expect( Psych.safe_load(result)['driver']['aws_ssh_key_id'] ).to eq('my_awesome_key')
+    expect( Psych.safe_load(result)['driver']['region'] ).to eq('us_awesome_1')
+    expect( Psych.safe_load(result)['driver']['instance_type'] ).to eq('t2.awesome')
+    expect( Psych.safe_load(result)['driver']['subnet_id'] ).to eq('subnet-awesome')
   end
 end

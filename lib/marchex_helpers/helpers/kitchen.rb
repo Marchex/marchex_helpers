@@ -127,6 +127,7 @@ module MarchexHelpers
           result['username'] = args[:ec2_username]
           result['connection_timeout'] = args[:connection_timeout]
         end
+        result
       end
     end
   end
