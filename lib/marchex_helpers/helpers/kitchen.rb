@@ -50,6 +50,9 @@ module MarchexHelpers
             :ec2_region         => 'us-west-2',
             :ec2_instance_type  => 't2.micro',
             :ec2_subnet_id      => 'subnet-2a251342',
+            :ec2_ssh_key        => "<%= ENV['KITCHEN_EC2_SSH_KEY_PATH'] %>",
+            :ec2_username       => 'ubuntu',
+            :ec2_timeout        => 10,
             :platforms          => nil # keys from @@platforms become defaults
         }
         @args = defaults.merge(args)
@@ -62,6 +65,7 @@ module MarchexHelpers
         yaml['provisioner'] = @@provisioner
         yaml['driver'] = get_drivers @args
         yaml['platforms'] = get_platforms @args
+        yaml['transport'] = get_transports @args if @args[:driver] = 'ec2' #only needed for EC2 at this time
 
         # chomping beginning of yaml so that it's needed in local yamls
         # ( CodeRanger does it )
@@ -112,6 +116,17 @@ module MarchexHelpers
           result['tags']            = @@tags
         end
         result
+      end
+      #
+      #
+      def get_transports(**args)
+        result = {}
+        result['name'] = args[:driver]
+        if args[:driver] == 'ec2'
+          result['ssh_key'] = args[:ec2_ssh_key]
+          result['username'] = args[:ec2_username]
+          result['connection_timeout'] = args[:connection_timeout]
+        end
       end
     end
   end
