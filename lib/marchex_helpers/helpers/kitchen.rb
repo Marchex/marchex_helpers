@@ -50,7 +50,7 @@ module MarchexHelpers
             :ec2_region         => 'us-west-2',
             :ec2_instance_type  => 't2.micro',
             :ec2_subnet_id      => 'subnet-2a251342',
-            :ec2_ssh_key        => "<%= ENV['KITCHEN_EC2_SSH_KEY_PATH'] %>",
+            :ec2_ssh_key        => '<%= ENV["KITCHEN_EC2_SSH_KEY_PATH"] %>',
             :ec2_username       => 'ubuntu',
             :ec2_timeout        => 10,
             :platforms          => nil # keys from @@platforms become defaults
@@ -121,7 +121,6 @@ module MarchexHelpers
       #
       def get_transports(**args)
         result = {}
-        result['name'] = args[:driver]
         if args[:driver] == 'ec2'
           result['ssh_key'] = args[:ec2_ssh_key]
           result['username'] = args[:ec2_username]

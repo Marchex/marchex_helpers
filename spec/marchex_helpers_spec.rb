@@ -32,6 +32,11 @@ describe 'MarchexHelpers' do
     expect( Psych.safe_load(result)['transport']['username']).to eq('ubuntu')
   end
 
+  it 'contains default ssh_key path for ec2 driver' do
+    result = MarchexHelpers.kitchen( driver: 'ec2' )
+    expect( Psych.safe_load(result)['transport']['ssh_key']).to eq('<%= ENV["KITCHEN_EC2_SSH_KEY_PATH"] %>')
+  end
+
   it 'passes ec2 parameters correctly' do
     result = MarchexHelpers.kitchen(
         driver: 'ec2',
