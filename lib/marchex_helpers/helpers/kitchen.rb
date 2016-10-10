@@ -82,7 +82,7 @@ module MarchexHelpers
         args[:chef_versions].each do |version|
           my_platforms.each do |platform|
             data = {}
-            data['name'] = platform + '-' + version
+            data['Name'] = platform + '-' + version
             data['driver_config'] = {}
             data['driver_config']['provision'] = true
             data['driver_config']['require_chef_omnibus']  = version
