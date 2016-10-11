@@ -18,6 +18,7 @@ Supplies standard sections of a .kitchen.yml that work in the Marchex environmen
             :platforms          => nil # keys from @@platforms become defaults
         }
 ```
+See the [code](https://github.marchex.com/marchex-chef/marchex_helpers/blob/master/lib/marchex_helpers/helpers/kitchen.rb#L6) for the current platforms
 
 .kitchen.yml example:
 ```
