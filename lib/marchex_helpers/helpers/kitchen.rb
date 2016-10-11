@@ -35,7 +35,7 @@ module MarchexHelpers
       }
 
       @@tags = {
-          'name'    => (ENV["KITCHEN_INSTANCE_NAME"] || "test kitchen instance"),
+          'Name'    => (ENV["KITCHEN_INSTANCE_NAME"] || "test kitchen instance"),
           'team'    => 'Tools',
           'project' => 'test-kitchen'
       }
@@ -82,7 +82,7 @@ module MarchexHelpers
         args[:chef_versions].each do |version|
           my_platforms.each do |platform|
             data = {}
-            data['Name'] = platform + '-' + version
+            data['name'] = platform + '-' + version
             data['driver_config'] = {}
             data['driver_config']['provision'] = true
             data['driver_config']['require_chef_omnibus']  = version

@@ -1,6 +1,7 @@
 require 'spec_helper'
 require_relative '../lib/marchex_helpers'
 require 'psych'
+require 'climate_control'
 
 describe 'MarchexHelpers' do
   before (:context) do
@@ -33,8 +34,10 @@ describe 'MarchexHelpers' do
   end
 
   it 'contains default ssh_key path for ec2 driver' do
-    result = MarchexHelpers.kitchen( driver: 'ec2' )
-    expect( Psych.safe_load(result)['transport']['ssh_key']).to eq('<%= ENV["KITCHEN_EC2_SSH_KEY_PATH"] %>')
+    ClimateControl.modify KITCHEN_EC2_SSH_KEY_PATH: '/foo/bar/a_special_key' do
+      result = MarchexHelpers.kitchen( driver: 'ec2' )
+      expect( Psych.safe_load(result)['transport']['ssh_key']).to eq('/foo/bar/a_special_key')
+    end
   end
 
   it 'passes ec2 parameters correctly' do
