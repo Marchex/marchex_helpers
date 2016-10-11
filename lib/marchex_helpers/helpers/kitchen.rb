@@ -35,7 +35,7 @@ module MarchexHelpers
       }
 
       @@tags = {
-          'name'    => '<%= ENV["KITCHEN_INSTANCE_NAME"] || "test kitchen instance" %>',
+          'Name'    => (ENV["KITCHEN_INSTANCE_NAME"] || "test kitchen instance"),
           'team'    => 'Tools',
           'project' => 'test-kitchen'
       }
@@ -50,7 +50,7 @@ module MarchexHelpers
             :ec2_region         => 'us-west-2',
             :ec2_instance_type  => 't2.micro',
             :ec2_subnet_id      => 'subnet-2a251342',
-            :ec2_ssh_key        => '<%= ENV["KITCHEN_EC2_SSH_KEY_PATH"] %>',
+            :ec2_ssh_key        => ENV["KITCHEN_EC2_SSH_KEY_PATH"],
             :ec2_username       => 'ubuntu',
             :ec2_timeout        => 10,
             :platforms          => nil # keys from @@platforms become defaults
