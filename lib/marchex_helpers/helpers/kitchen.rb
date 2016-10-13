@@ -31,7 +31,14 @@ module MarchexHelpers
 
       @@provisioner = {
           'name'                          => 'chef_zero',
-          'chef_omnibus_install_options'  => '-d /tmp/vagrant-cache/vagrant_omnibus'
+          'chef_omnibus_install_options'  => '-d /tmp/vagrant-cache/vagrant_omnibus',
+          'attributes'                    => {
+              'chef_client'                 => {
+                'config'                      => {
+                    'chef_server_url'           => 'http://localhost:8889'
+                }
+              }
+          }
       }
 
       @@tags = {
