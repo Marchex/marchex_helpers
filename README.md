@@ -18,7 +18,7 @@ Supplies standard sections of a .kitchen.yml that work in the Marchex environmen
             :platforms          => nil # keys from @@platforms become defaults
         }
 ```
-See the [code](https://github.marchex.com/marchex-chef/marchex_helpers/blob/master/lib/marchex_helpers/helpers/kitchen.rb#L6) for the current platforms
+See the [code](https://github.marchex.com/marchex-chef/marchex_helpers/blob/master/lib/marchex_helpers/helpers/kitchen.rb#L6) for the current platforms.  Note that platforms are required.
 
 .kitchen.yml example:
 ```
@@ -30,5 +30,5 @@ See the [code](https://github.marchex.com/marchex-chef/marchex_helpers/blob/mast
 ```
 ---
 #<% require 'marchex_helpers' %>
-<%= MarchexHelpers.kitchen( driver: 'ec2', ec2_aws_ssh_key_id: 'tools-team', platforms: ['ubuntu-12.04-mchx'] ) %>
+<%= MarchexHelpers.kitchen( driver: 'ec2', ec2_aws_ssh_key_id: 'tools-team', platforms: [:supported] ) %>
 ```
