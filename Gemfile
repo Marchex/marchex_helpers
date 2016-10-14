@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
-group :test do
+group :development do
   gem 'climate_control'
   gem 'rspec'
-  gem 'simplecov'
 end
