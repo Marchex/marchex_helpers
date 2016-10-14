@@ -68,7 +68,7 @@ module MarchexHelpers
           :ec2_tag_Name       => (ENV['KITCHEN_INSTANCE_NAME'] || 'test kitchen instance'),
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
-          :ec2_tag_creator    => ENV['USER'],
+          :ec2_tag_creator    => ENV['USER'] || 'delivery',
           :platforms          => nil # keys from @@platforms become defaults
         }
         @args = defaults.merge(args)
@@ -85,7 +85,7 @@ module MarchexHelpers
         yaml['provisioner'] = @@provisioner
         yaml['driver'] = get_drivers @args
         yaml['platforms'] = get_platforms @args
-        yaml['transport'] = get_transports @args if @args[:driver] = 'ec2' #only needed for EC2 at this time
+        yaml['transport'] = get_transports @args if @args[:driver] == :ec2 #only needed for EC2 at this time
 
         # chomping beginning of yaml so that it's needed in local yamls
         # ( CodeRanger does it )
@@ -121,7 +121,7 @@ module MarchexHelpers
               data['driver_config'] = {}
               data['driver_config']['provision'] = true
               data['driver_config']['require_chef_omnibus']  = version
-              if args[:driver] == 'ec2'
+              if args[:driver] == :ec2
                 data['driver'] = { 'image_id' => @@platforms[:ec2][platform][:image_id] }
               else
                 data['driver_config']['box']          = @@platforms[:vagrant][platform][:box]
@@ -165,7 +165,7 @@ module MarchexHelpers
       #
       def get_transports(**args)
         result = {}
-        if args[:driver] == 'ec2'
+        if args[:driver] == :ec2
           result['ssh_key'] = args[:ec2_ssh_key]
           result['username'] = args[:ec2_username]
           result['connection_timeout'] = args[:connection_timeout]

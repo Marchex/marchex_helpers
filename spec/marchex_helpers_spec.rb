@@ -47,6 +47,13 @@ describe 'MarchexHelpers' do
     end
   end
 
+  it 'adds delivery to the creator tag if USER does not exist' do
+    ClimateControl.modify USER: nil do
+      result = MarchexHelpers.kitchen( driver: :ec2, platforms: [:all] )
+      expect( Psych.load(result)['driver']['tags']['creator']).to eq('delivery')
+    end
+  end
+
   it 'passes ec2 parameters correctly' do
     yaml = MarchexHelpers.kitchen(
         driver: :ec2,
