@@ -147,7 +147,7 @@ module MarchexHelpers
       def get_drivers(**args)
 
         result = {}
-        result['name'] = args[:driver]
+        result['name'] = args[:driver].to_s
         if args[:driver] == :ec2
           result['aws_ssh_key_id']  = args[:ec2_aws_ssh_key_id]
           result['region']          = args[:ec2_region]
