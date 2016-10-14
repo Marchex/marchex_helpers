@@ -51,13 +51,6 @@ module MarchexHelpers
               }
           }
       }
-
-      @@tags = {
-        'Name'    => (ENV['KITCHEN_INSTANCE_NAME'] || 'test kitchen instance'),
-        'team'    => 'Tools',
-        'project' => 'test-kitchen',
-        'creator' => ENV['USER']
-      }
       #
       #
       #
@@ -72,6 +65,10 @@ module MarchexHelpers
           :ec2_ssh_key        => ENV['KITCHEN_EC2_SSH_KEY_PATH'],
           :ec2_username       => 'ubuntu',
           :ec2_timeout        => 10,
+          :ec2_tag_Name       => (ENV['KITCHEN_INSTANCE_NAME'] || 'test kitchen instance'),
+          :ec2_tag_team       => 'Tools',
+          :ec2_tag_project    => 'test-kitchen',
+          :ec2_tag_creator    => ENV['USER'],
           :platforms          => nil # keys from @@platforms become defaults
         }
         @args = defaults.merge(args)
@@ -101,7 +98,8 @@ module MarchexHelpers
       #
       def get_platforms(**args)
         my_platforms = []
-        (args[:platforms] || @@platforms[:"#{args[:driver]}"].keys).each do |plat|
+        platform_list = args[:platforms] || @@platforms[:"#{args[:driver]}"].keys
+        platform_list.each do |plat|
           if plat.is_a?(Symbol)
             if @@platform_tags[:"#{args[:driver]}"][:"#{plat}"]
               my_platforms.concat(@@platform_tags[:"#{args[:driver]}"][:"#{plat}"])
@@ -150,12 +148,16 @@ module MarchexHelpers
 
         result = {}
         result['name'] = args[:driver]
-        if args[:driver] == 'ec2'
+        if args[:driver] == :ec2
           result['aws_ssh_key_id']  = args[:ec2_aws_ssh_key_id]
           result['region']          = args[:ec2_region]
           result['subnet_id']       = args[:ec2_subnet_id]
           result['instance_type']   = args[:ec2_instance_type]
-          result['tags']            = @@tags
+          result['tags']            = {}
+          result['tags']['Name']    = args[:ec2_tag_Name]
+          result['tags']['team']    = args[:ec2_tag_team]
+          result['tags']['project'] = args[:ec2_tag_project]
+          result['tags']['creator'] = args[:ec2_tag_creator]
         end
         result
       end
@@ -174,12 +176,12 @@ module MarchexHelpers
       #
       #
       def abort_platforms(msg)
-        abort("#{msg}.\n" +
+        errstring = "#{msg}.\n" +
           "For #{@args[:driver]}, possible platforms are:\n" +
           "  #{@@platforms[ :"#{@args[:driver]}" ].keys.sort.join(', ')}\n" +
           "and possible platform tags are:\n" +
           "  :#{@@platform_tags[ :"#{@args[:driver]}" ].keys.sort.join(', :')}"
-        )
+        raise errstring
       end
     end
   end
