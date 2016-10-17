@@ -41,15 +41,15 @@ module MarchexHelpers
       }
 
       @@provisioner = {
-        'name'                          => 'chef_zero',
-        'chef_omnibus_install_options'  => '-d /tmp/vagrant-cache/vagrant_omnibus'
-      }
-
-      @@tags = {
-        'Name'    => (ENV['KITCHEN_INSTANCE_NAME'] || 'test kitchen instance'),
-        'team'    => 'Tools',
-        'project' => 'test-kitchen',
-        'creator' => ENV['USER']
+          'name'                          => 'chef_zero',
+          'chef_omnibus_install_options'  => '-d /tmp/vagrant-cache/vagrant_omnibus',
+          'attributes'                    => {
+              'chef_client'                 => {
+                'config'                      => {
+                    'chef_server_url'           => 'http://localhost:8889'
+                }
+              }
+          }
       }
       #
       #
@@ -65,6 +65,10 @@ module MarchexHelpers
           :ec2_ssh_key        => ENV['KITCHEN_EC2_SSH_KEY_PATH'],
           :ec2_username       => 'ubuntu',
           :ec2_timeout        => 10,
+          :ec2_tag_Name       => (ENV['KITCHEN_INSTANCE_NAME'] || 'test kitchen instance'),
+          :ec2_tag_team       => 'Tools',
+          :ec2_tag_project    => 'test-kitchen',
+          :ec2_tag_creator    => ENV['USER'] || 'delivery',
           :platforms          => nil # keys from @@platforms become defaults
         }
         @args = defaults.merge(args)
@@ -81,7 +85,7 @@ module MarchexHelpers
         yaml['provisioner'] = @@provisioner
         yaml['driver'] = get_drivers @args
         yaml['platforms'] = get_platforms @args
-        yaml['transport'] = get_transports @args if @args[:driver] = 'ec2' #only needed for EC2 at this time
+        yaml['transport'] = get_transports @args if @args[:driver] == :ec2 #only needed for EC2 at this time
 
         # chomping beginning of yaml so that it's needed in local yamls
         # ( CodeRanger does it )
@@ -94,7 +98,8 @@ module MarchexHelpers
       #
       def get_platforms(**args)
         my_platforms = []
-        (args[:platforms] || @@platforms[:"#{args[:driver]}"].keys).each do |plat|
+        platform_list = args[:platforms] || @@platforms[:"#{args[:driver]}"].keys
+        platform_list.each do |plat|
           if plat.is_a?(Symbol)
             if @@platform_tags[:"#{args[:driver]}"][:"#{plat}"]
               my_platforms.concat(@@platform_tags[:"#{args[:driver]}"][:"#{plat}"])
@@ -116,7 +121,7 @@ module MarchexHelpers
               data['driver_config'] = {}
               data['driver_config']['provision'] = true
               data['driver_config']['require_chef_omnibus']  = version
-              if args[:driver] == 'ec2'
+              if args[:driver] == :ec2
                 data['driver'] = { 'image_id' => @@platforms[:ec2][platform][:image_id] }
               else
                 data['driver_config']['box']          = @@platforms[:vagrant][platform][:box]
@@ -142,13 +147,17 @@ module MarchexHelpers
       def get_drivers(**args)
 
         result = {}
-        result['name'] = args[:driver]
-        if args[:driver] == 'ec2'
+        result['name'] = args[:driver].to_s
+        if args[:driver] == :ec2
           result['aws_ssh_key_id']  = args[:ec2_aws_ssh_key_id]
           result['region']          = args[:ec2_region]
           result['subnet_id']       = args[:ec2_subnet_id]
           result['instance_type']   = args[:ec2_instance_type]
-          result['tags']            = @@tags
+          result['tags']            = {}
+          result['tags']['Name']    = args[:ec2_tag_Name]
+          result['tags']['team']    = args[:ec2_tag_team]
+          result['tags']['project'] = args[:ec2_tag_project]
+          result['tags']['creator'] = args[:ec2_tag_creator]
         end
         result
       end
@@ -156,7 +165,7 @@ module MarchexHelpers
       #
       def get_transports(**args)
         result = {}
-        if args[:driver] == 'ec2'
+        if args[:driver] == :ec2
           result['ssh_key'] = args[:ec2_ssh_key]
           result['username'] = args[:ec2_username]
           result['connection_timeout'] = args[:connection_timeout]
@@ -167,12 +176,12 @@ module MarchexHelpers
       #
       #
       def abort_platforms(msg)
-        abort("#{msg}.\n" +
+        errstring = "#{msg}.\n" +
           "For #{@args[:driver]}, possible platforms are:\n" +
           "  #{@@platforms[ :"#{@args[:driver]}" ].keys.sort.join(', ')}\n" +
           "and possible platform tags are:\n" +
           "  :#{@@platform_tags[ :"#{@args[:driver]}" ].keys.sort.join(', :')}"
-        )
+        raise errstring
       end
     end
   end
