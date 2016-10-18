@@ -13,9 +13,9 @@ rule 'MCHX003', 'precedence level other than force_default used in environment c
             :column => 0
           }
         end
-      else
-        [ file_match(attributes_file) ]
-      end
-    end.compact
+      end.compact
+    else
+      [ file_match(attributes_file) ]
+    end
   end
 end

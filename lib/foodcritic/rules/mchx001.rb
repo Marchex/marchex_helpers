@@ -13,10 +13,10 @@ rule 'MCHX001', 'TODO: not updated in README.md' do
             :column => 0
           }
         end
-      end
+      end.compact
     else
       [ file_match(readme) ]
     end
-  end.compact
+  end
 end
 
