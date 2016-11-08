@@ -20,7 +20,7 @@ describe 'MarchexHelpers' do
 
   it 'contains 2 platform for ec2 latest' do
     result = MarchexHelpers.kitchen(driver: :ec2, chef_versions: ['latest'], platforms: [:supported])
-    expect( Psych.load(result)['platforms'].count.to_i ).to eq(2)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(3)
   end
 
   it 'contains 2 entries platform for ec2 latest with an aws key name' do

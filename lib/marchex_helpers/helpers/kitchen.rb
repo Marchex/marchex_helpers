@@ -30,6 +30,9 @@ module MarchexHelpers
           'ubuntu-12.04-mchx' => {
             image_id: 'ami-86688bb5'
           },
+          'ubuntu-16.04-pristine' => {
+            image_id: 'ami-746aba14'
+          },
           'centos-7.2-pristine' => {
             image_id: 'ami-d2c924b2',
             ec2_username: 'centos'
@@ -39,11 +42,11 @@ module MarchexHelpers
 
       @@platform_tags = {
         :vagrant => {
-          :supported => ['ubuntu-12.04-mchx','centos-7.2'],
+          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-7.2'],
           :all =>       @@platforms[:vagrant].keys
         },
         :ec2 => {
-          :supported => ['ubuntu-12.04-mchx','centos-7.2-pristine'],
+          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-7.2-pristine'],
           :all =>       @@platforms[:ec2].keys
         }
       }
