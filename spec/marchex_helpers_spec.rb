@@ -13,14 +13,14 @@ describe 'MarchexHelpers' do
   end
 
   # This assumes knowledge of the default data available
-  it 'contains 4 platforms for vagrant latest' do
+  it 'contains 5 platforms for vagrant latest' do
     result = MarchexHelpers.kitchen(driver: :vagrant, chef_versions: ['latest'], platforms: [:all])
-    expect( Psych.load(result)['platforms'].count.to_i ).to eq(4)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(5)
   end
 
-  it 'contains 1 platform for ec2 latest' do
+  it 'contains 2 platform for ec2 latest' do
     result = MarchexHelpers.kitchen(driver: :ec2, chef_versions: ['latest'], platforms: [:supported])
-    expect( Psych.load(result)['platforms'].count.to_i ).to eq(1)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(2)
   end
 
   it 'contains 2 entries platform for ec2 latest with an aws key name' do

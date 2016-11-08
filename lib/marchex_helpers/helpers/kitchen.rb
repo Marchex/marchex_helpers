@@ -20,22 +20,30 @@ module MarchexHelpers
           'centos-6.6' => {
             :box =>     'opscode-centos-6.6',
             :box_url => 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.6_chef-provisionerless.box'
+          },
+          'centos-7.2' => {
+            :box =>     'opscode-centos-7.2',
+            :box_url => 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-7.2_chef-provisionerless.box'
           }
         },
         :ec2 => {
           'ubuntu-12.04-mchx' => {
             image_id: 'ami-86688bb5'
+          },
+          'centos-7.2-pristine' => {
+            image_id: 'ami-d2c924b2',
+            ec2_username: 'centos'
           }
         }
       }
 
       @@platform_tags = {
         :vagrant => {
-          :supported => ['ubuntu-12.04-mchx'],
+          :supported => ['ubuntu-12.04-mchx','centos-7.2'],
           :all =>       @@platforms[:vagrant].keys
         },
         :ec2 => {
-          :supported => ['ubuntu-12.04-mchx'],
+          :supported => ['ubuntu-12.04-mchx','centos-7.2-pristine'],
           :all =>       @@platforms[:ec2].keys
         }
       }
