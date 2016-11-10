@@ -37,10 +37,10 @@ describe 'MarchexHelpers' do
     expect( Psych.load(result)['platforms'].count.to_i ).to eq(2)
   end
 
-  it 'returns 3 platforms for ec2 calling get_selected_platforms directly' do
+  it 'returns 4 platforms for ec2 calling get_selected_platforms directly' do
     instance = MarchexHelpers::Helpers::Kitchen.new(@args)
     result = instance.validate_platforms(@args)
-    expect( result.count.to_i ).to eq(3)
+    expect( result.count.to_i ).to eq(4)
   end
 
   it 'catches an invalid platform symbol and throws an error' do
@@ -66,7 +66,7 @@ describe 'MarchexHelpers' do
     name = plat + '-' + ver
     result = MarchexHelpers.kitchen( driver: :ec2, chef_version: [ver], platforms: [plat] )
     plat_result = (Psych.load(result)['platforms'].select{ |i| i['name'] == name }).pop
-    expect( plat_result['driver']['transport']['username']).to eq('ubuntu')
+    expect( plat_result['transport']['username']).to eq('ubuntu')
   end
 
   it 'contains default username ec2-user for ec2 driver and default ubuntu ami' do
@@ -75,7 +75,7 @@ describe 'MarchexHelpers' do
     name = plat + '-' + ver
     result = MarchexHelpers.kitchen( driver: :ec2, platforms: [plat] )
     plat_result = (Psych.load(result)['platforms'].select{ |i| i['name'] == name }).pop
-    expect( plat_result['driver']['transport']['username']).to eq('ec2-user')
+    expect( plat_result['transport']['username']).to eq('ubuntu')
   end
 
   it 'contains default username ubuntu for ec2 driver and default centos ami' do
@@ -84,7 +84,7 @@ describe 'MarchexHelpers' do
     name = plat + '-' + ver
     result = MarchexHelpers.kitchen( driver: :ec2, platforms: [plat] )
     plat_result = (Psych.load(result)['platforms'].select{ |i| i['name'] == name }).pop
-    expect( plat_result['driver']['transport']['username']).to eq('centos')
+    expect( plat_result['transport']['username']).to eq('centos')
   end
 
   it 'contains default ssh_key path for ec2 driver' do

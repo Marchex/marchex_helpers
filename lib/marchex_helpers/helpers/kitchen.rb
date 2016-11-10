@@ -36,8 +36,14 @@ module MarchexHelpers
           'ubuntu-16.04-pristine' => {
             image_id: 'ami-746aba14',
             :transport => {
-                :username => 'ec2-user'
+                :username => 'ubuntu'
             }
+          },
+          'centos-6.7-pristine' => {
+              image_id: 'ami-05cf2265',
+              :transport => {
+                  :username => 'root'
+              }
           },
           'centos-7.2-pristine' => {
             image_id: 'ami-d2c924b2',
@@ -50,11 +56,15 @@ module MarchexHelpers
 
       @@platform_tags = {
         :vagrant => {
-          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-7.2'],
+          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-6.6','centos-7.2'],
+          :supported_kvms => ['ubuntu-16.04-pristine','centos-6.6', 'centos-7.2'],
+          :supported_vms => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine'],
           :all =>       @@platforms[:vagrant].keys
         },
         :ec2 => {
-          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-7.2-pristine'],
+          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-6.7-pristine','centos-7.2-pristine'],
+          :supported_kvms => ['ubuntu-16.04-pristine', 'centos-6.7-pristine', 'centos-7.2-pristine'],
+          :supported_vms => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine'],
           :all =>       @@platforms[:ec2].keys
         }
       }
@@ -88,7 +98,7 @@ module MarchexHelpers
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
           :ec2_tag_creator    => ENV['USER'] || 'delivery',
-          :platforms          => nil # keys from @@platforms become defaults
+          :platforms          => @@platforms[:"#{args[:driver]}"][:all]
         }
         @args = defaults.merge(args)
 
@@ -118,12 +128,9 @@ module MarchexHelpers
       def validate_platforms(**args)
         result = []
         bad_platforms = []
-        # If no platforms, get all entries for the drive
-        list = args[:platforms] || @@platforms[:"#{args[:driver]}"].keys
-
         #
         # Step 1: Convert platform_tags into platforms.
-        list.each do |plat|
+        args[:platforms].each do |plat|
           #
           # If a Symbol, then it's a tag representing 1 or more platforms;
           # get the actual platforms from @@platform_tags
@@ -179,8 +186,8 @@ module MarchexHelpers
               data['driver']['image_id']  = @@platforms[:ec2][platform][:image_id]
               # haven't found a more elegant way to map these values -- passing in hashes from
               # the @@platforms structure leads to yaml keys with two colons (e.g. :username:)
-              data['driver']['transport'] ={}
-              data['driver']['transport']['username'] = @@platforms[:ec2][platform][:transport][:username]
+              data['transport'] ={}
+              data['transport']['username'] = @@platforms[:ec2][platform][:transport][:username]
 
             else
               data['driver_config']['box']          = @@platforms[:vagrant][platform][:box]
