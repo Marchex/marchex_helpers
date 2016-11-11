@@ -16,8 +16,8 @@ describe 'MarchexHelpers' do
     }
   end
 
-  it 'returns valid yaml'do
-    result = MarchexHelpers.kitchen(driver: :vagrant, platforms: [:supported])
+  it 'returns valid yaml' do
+    result = MarchexHelpers.kitchen(platforms: [:supported])
     expect{ result }.to_not raise_error
   end
   #

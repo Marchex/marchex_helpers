@@ -98,13 +98,13 @@ module MarchexHelpers
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
           :ec2_tag_creator    => ENV['USER'] || 'delivery',
-          :platforms          => @@platform_tags[:"#{args[:driver]}"][:all]
+          :platforms          => nil
         }
 
         @args = defaults.merge(args)
 
         if @args[:platforms] == nil || @args[:platforms].length == 0
-          abort_platforms "No 'platforms' supplied"
+          @args[:platforms] = @@platform_tags[:"#{args[:driver]}"][:all]
         end
       end
       #
