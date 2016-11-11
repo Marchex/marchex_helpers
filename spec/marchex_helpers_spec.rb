@@ -58,6 +58,11 @@ describe 'MarchexHelpers' do
       instance.get_platforms(@args)
     }.to raise_error(RuntimeError)
   end
+
+  it 'gets all the platforms if no :platforms specified' do
+    result = MarchexHelpers.kitchen(driver: :ec2)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(8)
+  end
   #
   # transport tests
   it 'contains default username ubuntu for ec2 driver and mchx-ubuntu ami' do

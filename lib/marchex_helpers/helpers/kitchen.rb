@@ -98,8 +98,9 @@ module MarchexHelpers
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
           :ec2_tag_creator    => ENV['USER'] || 'delivery',
-          :platforms          => @@platforms[:"#{args[:driver]}"][:all]
+          :platforms          => @@platform_tags[:"#{args[:driver]}"][:all]
         }
+
         @args = defaults.merge(args)
 
         if @args[:platforms] == nil || @args[:platforms].length == 0
