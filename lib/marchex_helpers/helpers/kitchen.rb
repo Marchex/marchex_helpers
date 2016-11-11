@@ -40,13 +40,13 @@ module MarchexHelpers
             }
           },
           'centos-6.7-pristine' => {
-              image_id: 'ami-05cf2265',
+              image_id: 'ami-fe3d9e9e',
               :transport => {
-                  :username => 'root'
+                  :username => 'centos'
               }
           },
           'centos-7.2-pristine' => {
-            image_id: 'ami-d2c924b2',
+            image_id: 'ami-fd01a29d',
             :transport => {
                 :username => 'centos'
             }
@@ -98,13 +98,13 @@ module MarchexHelpers
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
           :ec2_tag_creator    => ENV['USER'] || 'delivery',
-          :platforms          => @@platform_tags[:"#{args[:driver]}"][:all]
+          :platforms          => nil
         }
 
         @args = defaults.merge(args)
 
         if @args[:platforms] == nil || @args[:platforms].length == 0
-          abort_platforms "No 'platforms' supplied"
+          @args[:platforms] = @@platform_tags[:"#{args[:driver]}"][:all]
         end
       end
       #

@@ -16,8 +16,8 @@ describe 'MarchexHelpers' do
     }
   end
 
-  it 'returns valid yaml'do
-    result = MarchexHelpers.kitchen(driver: :vagrant, platforms: [:supported])
+  it 'returns valid yaml' do
+    result = MarchexHelpers.kitchen(platforms: [:supported])
     expect{ result }.to_not raise_error
   end
   #
@@ -27,9 +27,9 @@ describe 'MarchexHelpers' do
     expect( Psych.load(result)['platforms'].count.to_i ).to eq(5)
   end
 
-  it 'contains 3 platform for ec2 latest' do
+  it 'contains 4 platforms for ec2 latest' do
     result = MarchexHelpers.kitchen(driver: :ec2, chef_versions: ['latest'], platforms: [:supported])
-    expect( Psych.load(result)['platforms'].count.to_i ).to eq(3)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(4)
   end
 
   it 'contains 2 platform entries for ec2 with a single platform' do
