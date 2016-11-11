@@ -20,22 +20,51 @@ module MarchexHelpers
           'centos-6.6' => {
             :box =>     'opscode-centos-6.6',
             :box_url => 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.6_chef-provisionerless.box'
+          },
+          'centos-7.2' => {
+            :box =>     'opscode-centos-7.2',
+            :box_url => 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-7.2_chef-provisionerless.box'
           }
         },
         :ec2 => {
           'ubuntu-12.04-mchx' => {
-            image_id: 'ami-86688bb5'
+            image_id: 'ami-86688bb5',
+            :transport => {
+                :username => 'ubuntu'
+            }
+          },
+          'ubuntu-16.04-pristine' => {
+            image_id: 'ami-746aba14',
+            :transport => {
+                :username => 'ubuntu'
+            }
+          },
+          'centos-6.7-pristine' => {
+              image_id: 'ami-05cf2265',
+              :transport => {
+                  :username => 'root'
+              }
+          },
+          'centos-7.2-pristine' => {
+            image_id: 'ami-d2c924b2',
+            :transport => {
+                :username => 'centos'
+            }
           }
         }
       }
 
       @@platform_tags = {
         :vagrant => {
-          :supported => ['ubuntu-12.04-mchx'],
+          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-6.6','centos-7.2'],
+          :supported_kvms => ['ubuntu-16.04-pristine','centos-6.6', 'centos-7.2'],
+          :supported_vms => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine'],
           :all =>       @@platforms[:vagrant].keys
         },
         :ec2 => {
-          :supported => ['ubuntu-12.04-mchx'],
+          :supported => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine','centos-6.7-pristine','centos-7.2-pristine'],
+          :supported_kvms => ['ubuntu-16.04-pristine', 'centos-6.7-pristine', 'centos-7.2-pristine'],
+          :supported_vms => ['ubuntu-12.04-mchx','ubuntu-16.04-pristine'],
           :all =>       @@platforms[:ec2].keys
         }
       }
@@ -69,8 +98,9 @@ module MarchexHelpers
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
           :ec2_tag_creator    => ENV['USER'] || 'delivery',
-          :platforms          => nil # keys from @@platforms become defaults
+          :platforms          => @@platform_tags[:"#{args[:driver]}"][:all]
         }
+
         @args = defaults.merge(args)
 
         if @args[:platforms] == nil || @args[:platforms].length == 0
@@ -96,47 +126,78 @@ module MarchexHelpers
       #
       #
       #
-      def get_platforms(**args)
-        my_platforms = []
-        platform_list = args[:platforms] || @@platforms[:"#{args[:driver]}"].keys
-        platform_list.each do |plat|
+      def validate_platforms(**args)
+        result = []
+        bad_platforms = []
+        #
+        # Step 1: Convert platform_tags into platforms.
+        args[:platforms].each do |plat|
+          #
+          # If a Symbol, then it's a tag representing 1 or more platforms;
+          # get the actual platforms from @@platform_tags
           if plat.is_a?(Symbol)
-            if @@platform_tags[:"#{args[:driver]}"][:"#{plat}"]
-              my_platforms.concat(@@platform_tags[:"#{args[:driver]}"][:"#{plat}"])
-            else
+            if @@platform_tags[:"#{args[:driver]}"][:"#{plat}"].nil?
               abort_platforms "Platform tag :#{plat} not found"
             end
-          else
-            my_platforms.push(plat)
+            result.concat(@@platform_tags[:"#{args[:driver]}"][:"#{plat}"])
+            next
+          end
+          #
+          # If a String, just add it
+          if plat.is_a?(String)
+            result.push(plat)
+            next
+          end
+          #
+          # If we get here, you prolly passed an array or a hash.
+          abort_platforms "Platform tag #{plat} neither Symbol, nor String. Aborting."
+        end
+
+        #
+        # Step 2: Make sure the platforms are valid, abort if invalid
+        result.uniq.each do |platform|
+          if @@platforms[:"#{args[:driver]}"][platform].nil?
+            bad_platforms.push(platform)
           end
         end
 
+        if bad_platforms.length > 0
+          abort_platforms "Platforms '#{bad_platforms.join("', '")}' not found"
+        end
+
+        # return results
+        result
+      end
+      #
+      #
+      #
+      def get_platforms(**args)
+        # all validation logic moved to validate_platforms...
+        my_platforms = validate_platforms(args)
         result = []
-        args[:chef_versions].uniq.each do |version|
-          bad_platforms = []
-          my_platforms.uniq.each do |platform|
-            if @@platforms[:"#{args[:driver]}"][platform]
-              data = {}
-              data['name'] = platform + '-' + version
-              data['driver_config'] = {}
-              data['driver_config']['provision'] = true
-              data['driver_config']['require_chef_omnibus']  = version
-              if args[:driver] == :ec2
-                data['driver'] = { 'image_id' => @@platforms[:ec2][platform][:image_id] }
-              else
-                data['driver_config']['box']          = @@platforms[:vagrant][platform][:box]
-                data['driver_config']['box_url']      = @@platforms[:vagrant][platform][:box_url]
-                data['driver_config']['vagrantfiles'] = [
-                    'test/shared/vagrant_cache_omnibus.rb'
-                ]
-              end
-              result.push(data)
+        my_platforms.uniq.each do |platform|
+          args[:chef_versions].uniq.each do |version|
+            data = {}
+            data['name'] = platform + '-' + version
+            data['driver_config'] = {}
+            data['driver_config']['provision'] = true
+            data['driver_config']['require_chef_omnibus']  = version
+            if args[:driver] == :ec2
+              data['driver'] = {} if data['driver'].nil?
+              data['driver']['image_id']  = @@platforms[:ec2][platform][:image_id]
+              # haven't found a more elegant way to map these values -- passing in hashes from
+              # the @@platforms structure leads to yaml keys with two colons (e.g. :username:)
+              data['transport'] ={}
+              data['transport']['username'] = @@platforms[:ec2][platform][:transport][:username]
+
             else
-              bad_platforms.push(platform)
+              data['driver_config']['box']          = @@platforms[:vagrant][platform][:box]
+              data['driver_config']['box_url']      = @@platforms[:vagrant][platform][:box_url]
+              data['driver_config']['vagrantfiles'] = [
+                  'test/shared/vagrant_cache_omnibus.rb'
+              ]
             end
-          end
-          if bad_platforms.length > 0
-            abort_platforms "Platforms '#{bad_platforms.join("', '")}' not found"
+            result.push(data)
           end
         end
         result
@@ -167,7 +228,7 @@ module MarchexHelpers
         result = {}
         if args[:driver] == :ec2
           result['ssh_key'] = args[:ec2_ssh_key]
-          result['username'] = args[:ec2_username]
+          #result['username'] = args[:ec2_username]
           result['connection_timeout'] = args[:connection_timeout]
         end
         result
