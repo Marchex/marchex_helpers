@@ -40,13 +40,13 @@ module MarchexHelpers
             }
           },
           'centos-6.7-pristine' => {
-              image_id: 'ami-05cf2265',
+              image_id: 'ami-fe3d9e9e',
               :transport => {
-                  :username => 'root'
+                  :username => 'centos'
               }
           },
           'centos-7.2-pristine' => {
-            image_id: 'ami-d2c924b2',
+            image_id: 'ami-fd01a29d',
             :transport => {
                 :username => 'centos'
             }
