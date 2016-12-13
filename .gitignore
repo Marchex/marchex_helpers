@@ -2,3 +2,6 @@
 Gemfile.lock
 *.gem
 coverage/
+.vendor/
+.bundle
+!.bundle/config
