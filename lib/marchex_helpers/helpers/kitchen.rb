@@ -69,17 +69,6 @@ module MarchexHelpers
         }
       }
 
-      @@provisioner = {
-          'name'                          => 'chef_zero',
-          'chef_omnibus_install_options'  => '-d /tmp/vagrant-cache/vagrant_omnibus',
-          'attributes'                    => {
-              'chef_client'                 => {
-                'config'                      => {
-                    'chef_server_url'           => 'http://localhost:8889'
-                }
-              }
-          }
-      }
       #
       #
       #
@@ -87,6 +76,8 @@ module MarchexHelpers
         defaults = {
           :driver             => 'vagrant',
           :chef_versions      => ['12.6.0', 'latest'],
+          :fqdn               => 'cxcp99.sad.marchex.com',
+          :ec2_fqdn           => 'cxcp99.aws-us-west-2-vpc2.marchex.com',
           :ec2_aws_ssh_key_id => 'tools-team',
           :ec2_region         => 'us-west-2',
           :ec2_instance_type  => 't2.micro',
@@ -112,7 +103,7 @@ module MarchexHelpers
       #
       def to_yaml
         yaml = {}
-        yaml['provisioner'] = @@provisioner
+        yaml['provisioner'] = get_provisioner @args
         yaml['driver'] = get_drivers @args
         yaml['platforms'] = get_platforms @args
         yaml['transport'] = get_transports @args if @args[:driver] == :ec2 #only needed for EC2 at this time
@@ -236,6 +227,24 @@ module MarchexHelpers
       #
       #
       #
+      def get_provisioner(**args)
+        result = {}
+        result['name'] = 'chef_zero'
+        result['chef_omnibus_install_options'] = '-d /tmp/vagrant-cache/vagrant_omnibus'
+        result['attributes'] = {
+                'set_fqdn'              => args[:fqdn],
+                'chef_client'           => {
+                  'config'              => {
+                      'chef_server_url' => 'http://localhost:8889'
+                  }
+                }
+        }
+        if args[:driver] == :ec2
+          result['attributes']['set_fqdn'] = args[:ec2_fqdn]
+        end
+        result
+      end
+
       def abort_platforms(msg)
         errstring = "#{msg}.\n" +
           "For #{@args[:driver]}, possible platforms are:\n" +

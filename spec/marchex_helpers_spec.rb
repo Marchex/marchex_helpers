@@ -37,6 +37,22 @@ describe 'MarchexHelpers' do
     expect( Psych.load(result)['platforms'].count.to_i ).to eq(2)
   end
 
+  # provisioner tests
+  it 'Sets the correct chef_server_url attribute' do
+    result = MarchexHelpers.kitchen(driver: :vagrant, chef_versions: ['latest'], platforms: [:all])
+    expect( Psych.load(result)['provisioner']['attributes']['chef_client']['config']['chef_server_url'] ).to eq('http://localhost:8889')
+  end
+
+  it 'Sets the correct set_fqdn attribute for vagrant VMs' do
+    result = MarchexHelpers.kitchen(driver: :vagrant)
+    expect( Psych.load(result)['provisioner']['attributes']['set_fqdn'] ).to eq('cxcp99.sad.marchex.com')
+  end
+
+  it 'Sets the correct set_fqdn attribute for ec2 VMs' do
+    result = MarchexHelpers.kitchen(driver: :ec2)
+    expect( Psych.load(result)['provisioner']['attributes']['set_fqdn'] ).to eq('cxcp99.aws-us-west-2-vpc2.marchex.com')
+  end
+
   it 'returns 4 platforms for ec2 calling get_selected_platforms directly' do
     instance = MarchexHelpers::Helpers::Kitchen.new(@args)
     result = instance.validate_platforms(@args)
