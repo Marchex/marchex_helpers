@@ -260,6 +260,7 @@ EOH
         result = {}
         result['name'] = 'chef_zero'
         result['chef_omnibus_install_options'] = '-d /tmp/vagrant-cache/vagrant_omnibus'
+        result['environments_path'] = 'test/environments'
         result['attributes'] = {
           'set_fqdn'              => args[:fqdn],
           'chef_client'           => {

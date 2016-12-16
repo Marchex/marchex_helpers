@@ -38,9 +38,16 @@ describe 'MarchexHelpers' do
   end
 
   # provisioner tests
-  it 'Sets the correct chef_server_url attribute' do
-    result = MarchexHelpers.kitchen(driver: :vagrant, chef_versions: ['latest'], platforms: [:all])
-    expect( Psych.load(result)['provisioner']['attributes']['chef_client']['config']['chef_server_url'] ).to eq('http://localhost:8889')
+  %w( vagrant ec2 ).each do |drv|
+    it "Sets the correct chef_server_url attribute for the #{drv} driver" do
+      result = MarchexHelpers.kitchen(driver: drv.to_sym, chef_versions: ['latest'], platforms: [:all])
+      expect( Psych.load(result)['provisioner']['attributes']['chef_client']['config']['chef_server_url'] ).to eq('http://localhost:8889')
+    end
+
+    it "Sets the correct environments_path attribute for the #{drv} driver" do
+      result = MarchexHelpers.kitchen(driver: drv.to_sym, chef_versions: ['latest'], platforms: [:all])
+      expect( Psych.load(result)['provisioner']['environments_path'] ).to eq('test/environments')
+    end
   end
 
   it 'Sets the correct set_fqdn attribute for vagrant VMs' do
