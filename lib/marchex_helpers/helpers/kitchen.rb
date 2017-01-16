@@ -85,7 +85,7 @@ module MarchexHelpers
           :ec2_ssh_key        => ENV['KITCHEN_EC2_SSH_KEY_PATH'],
           :ec2_username       => 'ubuntu',
           :ec2_timeout        => 10,
-          :ec2_tag_Name       => (ENV['KITCHEN_INSTANCE_NAME'] || 'test kitchen instance'),
+          :ec2_tag_Name       => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + ENV['USER']),
           :ec2_tag_team       => 'Tools',
           :ec2_tag_project    => 'test-kitchen',
           :ec2_tag_creator    => ENV['USER'] || 'delivery',
@@ -232,12 +232,12 @@ module MarchexHelpers
         result['name'] = 'chef_zero'
         result['chef_omnibus_install_options'] = '-d /tmp/vagrant-cache/vagrant_omnibus'
         result['attributes'] = {
-                'set_fqdn'              => args[:fqdn],
-                'chef_client'           => {
-                  'config'              => {
-                      'chef_server_url' => 'http://localhost:8889'
-                  }
-                }
+          'set_fqdn'              => args[:fqdn],
+          'chef_client'           => {
+            'config'              => {
+              'chef_server_url' => 'http://localhost:8889'
+            }
+          }
         }
         if args[:driver] == :ec2
           result['attributes']['set_fqdn'] = args[:ec2_fqdn]

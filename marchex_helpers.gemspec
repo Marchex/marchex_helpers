@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'marchex_helpers'
-  s.version     = '0.1.21'
-  s.date        = '2016-12-13'
+  s.version     = '0.1.22'
+  s.date        = '2017-01-16'
   s.summary     = 'Helpers to inject Marchex standard Chef bits'
   s.description = ""
   s.authors     = ['Tools Team']
