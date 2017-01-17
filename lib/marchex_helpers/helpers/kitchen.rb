@@ -212,7 +212,21 @@ module MarchexHelpers
           result['tags']['creator'] = args[:ec2_tag_creator]
           result['user_data'] = <<-EOH
 #!/bin/bash -e
-sudo apt -y install awscli
+# this script has been tested with our kitchen images for ubuntu 12.04 and 16.04,
+# and centos 6.7 and 7.2.  it installs the aws tools, then updates the tags
+# for the created volumes.
+
+export PATH="/usr/local/bin:$PATH"
+
+apt-get -y install awscli || apt-get -y install unzip curl || yum -y install aws-cli || yum -y install unzip curl
+
+if [[ -z "$(which aws)" ]]; then
+  curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+  unzip awscli-bundle.zip
+  ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+fi
+
+AWS=$( which aws )
 
 mkdir -p ~/.aws
 cat > ~/.aws/credentials <<EOL
@@ -222,9 +236,9 @@ aws_secret_access_key = YYY
 EOL
 
 AWS_INSTANCE_ID=$( curl http://169.254.169.254/latest/meta-data/instance-id )
-ROOT_DISK_ID=$( aws ec2 describe-volumes --region #{args[:ec2_region]} --filter "Name=attachment.instance-id, Values=${AWS_INSTANCE_ID}" --query "Volumes[].VolumeId" --out text )
+ROOT_DISK_ID=$( ${AWS} ec2 describe-volumes --region #{args[:ec2_region]} --filter "Name=attachment.instance-id, Values=${AWS_INSTANCE_ID}" --query "Volumes[].VolumeId" --out text )
 
-aws ec2 create-tags --region #{args[:ec2_region]} --resources ${ROOT_DISK_ID} --tags Key=Name,Value=#{args[:ec2_tag_Name]}:root Key=team,Value=#{args[:ec2_tag_team]} Key=project,Value=#{args[:ec2_tag_project]} Key=creator,Value=#{args[:ec2_tag_creator]}
+${AWS} ec2 create-tags --region #{args[:ec2_region]} --resources ${ROOT_DISK_ID} --tags Key=Name,Value=#{args[:ec2_tag_Name]}:root Key=team,Value=#{args[:ec2_tag_team]} Key=project,Value=#{args[:ec2_tag_project]} Key=creator,Value=#{args[:ec2_tag_creator]}
 EOH
         end
         result
