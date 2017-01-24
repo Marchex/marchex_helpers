@@ -74,22 +74,23 @@ module MarchexHelpers
       #
       def initialize(**args)
         defaults = {
-          :driver             => 'vagrant',
-          :chef_versions      => ['12.6.0', 'latest'],
-          :fqdn               => 'cxcp99.sad.marchex.com',
-          :ec2_fqdn           => 'cxcp99.aws-us-west-2-vpc2.marchex.com',
-          :ec2_aws_ssh_key_id => 'tools-team',
-          :ec2_region         => 'us-west-2',
-          :ec2_instance_type  => 't2.micro',
-          :ec2_subnet_id      => 'subnet-2a251342',
-          :ec2_ssh_key        => ENV['KITCHEN_EC2_SSH_KEY_PATH'],
-          :ec2_username       => 'ubuntu',
-          :ec2_timeout        => 10,
-          :ec2_tag_Name       => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + ENV['USER']),
-          :ec2_tag_team       => 'Tools',
-          :ec2_tag_project    => 'test-kitchen',
-          :ec2_tag_creator    => ENV['USER'] || 'delivery',
-          :platforms          => nil
+          :driver               => 'vagrant',
+          :chef_versions        => ['12.6.0', 'latest'],
+          :fqdn                 => 'cxcp99.sad.marchex.com',
+          :ec2_fqdn             => 'cxcp99.aws-us-west-2-vpc2.marchex.com',
+          :ec2_aws_ssh_key_id   => 'tools-team',
+          :ec2_region           => 'us-west-2',
+          :ec2_instance_type    => 't2.micro',
+          :ec2_subnet_id        => 'subnet-2a251342',
+          :ec2_ssh_key          => ENV['KITCHEN_EC2_SSH_KEY_PATH'],
+          :ec2_username         => 'ubuntu',
+          :ec2_timeout          => 10,
+          :ec2_iam_profile_name => 'ec2-default-role',
+          :ec2_tag_Name         => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + (ENV['USER'] || 'delivery')),
+          :ec2_tag_team         => 'Tools',
+          :ec2_tag_project      => 'test-kitchen',
+          :ec2_tag_creator      => ENV['USER'] || 'delivery',
+          :platforms            => nil
         }
 
         @args = defaults.merge(args)
@@ -201,15 +202,43 @@ module MarchexHelpers
         result = {}
         result['name'] = args[:driver].to_s
         if args[:driver] == :ec2
-          result['aws_ssh_key_id']  = args[:ec2_aws_ssh_key_id]
-          result['region']          = args[:ec2_region]
-          result['subnet_id']       = args[:ec2_subnet_id]
-          result['instance_type']   = args[:ec2_instance_type]
-          result['tags']            = {}
-          result['tags']['Name']    = args[:ec2_tag_Name]
-          result['tags']['team']    = args[:ec2_tag_team]
-          result['tags']['project'] = args[:ec2_tag_project]
-          result['tags']['creator'] = args[:ec2_tag_creator]
+          result['aws_ssh_key_id']    = args[:ec2_aws_ssh_key_id]
+          result['region']            = args[:ec2_region]
+          result['subnet_id']         = args[:ec2_subnet_id]
+          result['instance_type']     = args[:ec2_instance_type]
+          result['iam_profile_name']  = args[:ec2_iam_profile_name]
+          result['tags']              = {}
+          result['tags']['Name']      = args[:ec2_tag_Name]
+          result['tags']['team']      = args[:ec2_tag_team]
+          result['tags']['project']   = args[:ec2_tag_project]
+          result['tags']['creator']   = args[:ec2_tag_creator]
+          result['user_data'] = <<-EOH
+#!/bin/bash -e
+# this script has been tested with our kitchen images for ubuntu 12.04 and 16.04,
+# and centos 6.7 and 7.2.  it installs the aws tools, then updates the tags
+# for the created volumes.
+
+export PATH="/usr/local/bin:$PATH"
+
+apt-get -y install awscli || apt-get -y install unzip curl || yum -y install aws-cli || yum -y install unzip curl
+
+if [[ -z "$(which aws)" ]]; then
+  curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+  unzip awscli-bundle.zip
+  ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+fi
+
+AWS=$( which aws )
+
+AWS_INSTANCE_ID=$( curl http://169.254.169.254/latest/meta-data/instance-id )
+# get volume ID, and attached device ID
+ROOT_DISK_IDS=($( ${AWS} ec2 describe-volumes --region #{args[:ec2_region]} --filter "Name=attachment.instance-id, Values=${AWS_INSTANCE_ID}" --query "Volumes[].[VolumeId, Attachments[].Device]" --out text ))
+
+for ((i=0; i < ${#ROOT_DISK_IDS[@]}; i+=2));
+do
+  ${AWS} ec2 create-tags --region #{args[:ec2_region]} --resources ${ROOT_DISK_IDS[i]} --tags Key=Name,Value=#{args[:ec2_tag_Name]}:${ROOT_DISK_IDS[i+1]} Key=team,Value=#{args[:ec2_tag_team]} Key=project,Value=#{args[:ec2_tag_project]} Key=creator,Value=#{args[:ec2_tag_creator]}
+done
+EOH
         end
         result
       end

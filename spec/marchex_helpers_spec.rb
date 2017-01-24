@@ -120,6 +120,7 @@ describe 'MarchexHelpers' do
     ClimateControl.modify USER: 'llloyd' do
       result = MarchexHelpers.kitchen( driver: :ec2, platforms: [:all] )
       expect( Psych.load(result)['driver']['tags']['creator']).to eq('llloyd')
+      expect( Psych.load(result)['driver']['tags']['Name']).to match(/-llloyd$/)
     end
   end
 
@@ -127,6 +128,7 @@ describe 'MarchexHelpers' do
     ClimateControl.modify USER: nil do
       result = MarchexHelpers.kitchen( driver: :ec2, platforms: [:all] )
       expect( Psych.load(result)['driver']['tags']['creator']).to eq('delivery')
+      expect( Psych.load(result)['driver']['tags']['Name']).to match(/-delivery$/)
     end
   end
 
@@ -138,5 +140,6 @@ describe 'MarchexHelpers' do
     expect( result['driver']['region'] ).to eq('us_awesome_1')
     expect( result['driver']['instance_type'] ).to eq('t2.awesome')
     expect( result['driver']['subnet_id'] ).to eq('subnet-awesome')
+    expect( result['driver']['user_data'] ).to match(/ ec2 create-tags /)
   end
 end
