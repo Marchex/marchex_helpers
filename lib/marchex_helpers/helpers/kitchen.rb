@@ -86,7 +86,7 @@ module MarchexHelpers
           :ec2_username         => 'ubuntu',
           :ec2_timeout          => 10,
           :ec2_iam_profile_name => 'ec2-default-role',
-          :ec2_tag_Name         => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + ENV['USER']),
+          :ec2_tag_Name         => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + (ENV['USER'] || 'delivery')),
           :ec2_tag_team         => 'Tools',
           :ec2_tag_project      => 'test-kitchen',
           :ec2_tag_creator      => ENV['USER'] || 'delivery',
