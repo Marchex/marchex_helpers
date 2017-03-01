@@ -131,11 +131,11 @@ describe 'MarchexHelpers' do
     end
   end
 
-  it 'adds delivery to the creator tag if USER does not exist' do
+  it 'adds jenkins to the creator tag if USER does not exist' do
     ClimateControl.modify USER: nil do
       result = MarchexHelpers.kitchen( driver: :ec2, platforms: [:all] )
-      expect( Psych.load(result)['driver']['tags']['creator']).to eq('delivery')
-      expect( Psych.load(result)['driver']['tags']['Name']).to match(/-delivery$/)
+      expect( Psych.load(result)['driver']['tags']['creator']).to eq('jenkins')
+      expect( Psych.load(result)['driver']['tags']['Name']).to match(/-jenkins$/)
     end
   end
 

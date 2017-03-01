@@ -86,10 +86,10 @@ module MarchexHelpers
           :ec2_username         => 'ubuntu',
           :ec2_timeout          => 10,
           :ec2_iam_profile_name => 'ec2-default-role',
-          :ec2_tag_Name         => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + (ENV['USER'] || 'delivery')),
+          :ec2_tag_Name         => (ENV['KITCHEN_INSTANCE_NAME'] || 'test-kitchen-local-' + (ENV['USER'] || 'jenkins')),
           :ec2_tag_team         => 'Tools',
           :ec2_tag_project      => 'test-kitchen',
-          :ec2_tag_creator      => ENV['USER'] || 'delivery',
+          :ec2_tag_creator      => ENV['USER'] || 'jenkins',
           :platforms            => nil
         }
 
@@ -189,6 +189,7 @@ module MarchexHelpers
                   'test/shared/vagrant_cache_omnibus.rb'
               ]
             end
+            data['attributes'] = get_attributes @args
             result.push(data)
           end
         end
@@ -272,6 +273,14 @@ EOH
         if args[:driver] == :ec2
           result['attributes']['set_fqdn'] = args[:ec2_fqdn]
         end
+        result
+      end
+
+      def get_attributes(**args)
+        result = {}
+        result['mchx_pulley_client'] = {
+          'deploy_group' => 'root'
+        }
         result
       end
 
