@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name        = 'marchex_helpers'
-  s.version     = '0.1.24'
-  s.date        = '2017-01-24'
+  s.version     = '0.1.25'
+  s.date        = '2017-03-01'
   s.summary     = 'Helpers to inject Marchex standard Chef bits'
-  s.description = ""
+  s.description = ''
   s.authors     = ['Tools Team']
   s.email       = 'tools-team@marchex.com'
   s.files       = `git ls-files`.split($/)
