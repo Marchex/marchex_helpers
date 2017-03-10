@@ -34,7 +34,7 @@ describe 'MarchexHelpers' do
 
   it 'contains 2 platform entries for ec2 with a single platform' do
     result = MarchexHelpers.kitchen(driver: :ec2, platforms: ['ubuntu-12.04-mchx'])
-    expect( Psych.load(result)['platforms'].count.to_i ).to eq(2)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(3)
   end
 
   # provisioner tests
@@ -84,7 +84,7 @@ describe 'MarchexHelpers' do
 
   it 'gets all the platforms if no :platforms specified' do
     result = MarchexHelpers.kitchen(driver: :ec2)
-    expect( Psych.load(result)['platforms'].count.to_i ).to eq(8)
+    expect( Psych.load(result)['platforms'].count.to_i ).to eq(12)
   end
   #
   # transport tests
