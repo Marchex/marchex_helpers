@@ -75,7 +75,7 @@ module MarchexHelpers
       def initialize(**args)
         defaults = {
           :driver               => 'vagrant',
-          :chef_versions        => ['12.6.0', '12.18.31', 'latest'],
+          :chef_versions        => ['12.18.31', 'latest'],
           :fqdn                 => 'cxcp99.sad.marchex.com',
           :ec2_fqdn             => 'cxcp99.aws-us-west-2-vpc2.marchex.com',
           :ec2_aws_ssh_key_id   => 'tools-team',
