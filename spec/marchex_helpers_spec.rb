@@ -90,7 +90,7 @@ describe 'MarchexHelpers' do
   # transport tests
   it 'contains default username ubuntu for ec2 driver and mchx-ubuntu ami' do
     plat = 'ubuntu-12.04-mchx'
-    ver = '12.6.0'
+    ver = '12.18.31'
     name = plat + '-' + ver
     result = MarchexHelpers.kitchen( driver: :ec2, chef_version: [ver], platforms: [plat] )
     plat_result = (Psych.load(result)['platforms'].select{ |i| i['name'] == name }).pop
@@ -99,7 +99,7 @@ describe 'MarchexHelpers' do
 
   it 'contains default username ec2-user for ec2 driver and default ubuntu ami' do
     plat = 'ubuntu-16.04-pristine'
-    ver = '12.6.0'
+    ver = '12.18.31'
     name = plat + '-' + ver
     result = MarchexHelpers.kitchen( driver: :ec2, platforms: [plat] )
     plat_result = (Psych.load(result)['platforms'].select{ |i| i['name'] == name }).pop
@@ -108,7 +108,7 @@ describe 'MarchexHelpers' do
 
   it 'contains default username ubuntu for ec2 driver and default centos ami' do
     plat = 'centos-7.2-pristine'
-    ver = '12.6.0'
+    ver = '12.18.31'
     name = plat + '-' + ver
     result = MarchexHelpers.kitchen( driver: :ec2, platforms: [plat] )
     plat_result = (Psych.load(result)['platforms'].select{ |i| i['name'] == name }).pop

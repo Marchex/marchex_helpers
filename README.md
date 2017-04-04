@@ -36,15 +36,29 @@ See the [code](https://github.marchex.com/marchex-chef/marchex_helpers/blob/mast
 ## Development
 
 ### Tests
-
-```
 rake unit
+```
+jcarter-mac:marchex_helpers jcarter$ rake unit
+bundle check || bundle install
+The Gemfile's dependencies are satisfied
+bundle exec rspec spec
+.....................
+
+Finished in 0.05647 seconds (files took 0.09975 seconds to load)
+21 examples, 0 failures
 ```
 
 ### Build
 
+$ rake build
 ```
-rake build
+jcarter-mac:marchex_helpers jcarter$ rake build marchex_helpers.gemspec
+WARNING:  no homepage specified
+WARNING:  See http://guides.rubygems.org/specification-reference/ for help
+  Successfully built RubyGem
+  Name: marchex_helpers
+  Version: 0.1.26
+  File: marchex_helpers-0.1.26.gem
 ```
 
 Then upload to http://rubygems.sea.marchex.com/
