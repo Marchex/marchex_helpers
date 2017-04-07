@@ -62,3 +62,8 @@ WARNING:  See http://guides.rubygems.org/specification-reference/ for help
 ```
 
 Then upload to http://rubygems.sea.marchex.com/
+
+
+## Copyright and license
+
+Code and documentation copyright 2016-2017 [Marchex, Inc.](https://www.marchex.com/) ([GitHub](https://github.com/Marchex)). Code released under the [MIT License](https://github.com/Marchex/marchex_helpers/blob/master/LICENSE.txt).
