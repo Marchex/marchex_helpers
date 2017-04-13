@@ -27,3 +27,16 @@ desc "Build gem."
 task :build do
   sh "gem build marchex_helpers.gemspec"
 end
+
+desc "Tag repo (after committing changes and bumping version)"
+task :tag do
+  sh <<-eos, verbose: false
+set -e
+echo "# get version"
+new_version=$(perl -nle 'last if /^\\s*s\\.version\\s*=\\s*(["'\\''])(.+?)\\1/ && print $2' marchex_helpers.gemspec)
+echo "# create tag ${new_version}"
+git tag -a ${new_version} -m "marchex_helpers version ${new_version}"
+echo "# push tag"
+git push origin ${new_version}
+eos
+end

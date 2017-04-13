@@ -36,9 +36,11 @@ See the [code](https://github.marchex.com/marchex-chef/marchex_helpers/blob/mast
 ## Development
 
 ### Tests
-rake unit
+
+Before committing and pushing changes:
+
 ```
-jcarter-mac:marchex_helpers jcarter$ rake unit
+$ rake unit
 bundle check || bundle install
 The Gemfile's dependencies are satisfied
 bundle exec rspec spec
@@ -50,9 +52,10 @@ Finished in 0.05647 seconds (files took 0.09975 seconds to load)
 
 ### Build
 
-$ rake build
+After committing and pushing changes:
+
 ```
-jcarter-mac:marchex_helpers jcarter$ rake build marchex_helpers.gemspec
+$ rake build
 WARNING:  no homepage specified
 WARNING:  See http://guides.rubygems.org/specification-reference/ for help
   Successfully built RubyGem
@@ -61,8 +64,24 @@ WARNING:  See http://guides.rubygems.org/specification-reference/ for help
   File: marchex_helpers-0.1.26.gem
 ```
 
-Then upload to http://rubygems.sea.marchex.com/
+Then upload to the [Marchex gem server](http://rubygems.sea.marchex.com/).
 
+
+### Tag
+
+After committing and pushing changes:
+
+```
+$ rake tag
+# get version
+# create tag 0.1.27
+# push tag
+Counting objects: 1, done.
+Writing objects: 100% (1/1), 174 bytes | 0 bytes/s, done.
+Total 1 (delta 0), reused 0 (delta 0)
+To github.marchex.com:marchex-chef/marchex_helpers.git
+ * [new tag]         0.1.27 -> 0.1.27
+```
 
 ## Copyright and license
 
