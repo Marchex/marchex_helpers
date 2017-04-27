@@ -15,7 +15,7 @@ module MarchexHelpers
           },
           'ubuntu-12.04-mchx' => {
             :box   =>   'u12-04-04032015',
-            :box_url => 'http://tools1.sad.marchex.com:8898/vm_images/u12-04-04032015.box'
+            :box_url => 'http://tools1.sea1.marchex.com:8898/vm_images/u12-04-04032015.box'
           },
           'centos-6.6' => {
             :box =>     'opscode-centos-6.6',
